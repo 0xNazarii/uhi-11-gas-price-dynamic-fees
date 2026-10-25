@@ -24,11 +24,7 @@ contract GasPriceFeesHook_afterSwap is Base_Test {
         swapAt(10 gwei);
 
         // Assert
-        assertEq(
-            hook.movingAverageGasPrice(),
-            10 gwei,
-            "Average should stay at 10 gwei"
-        );
+        assertEq(hook.movingAverageGasPrice(), 10 gwei, "Average should stay at 10 gwei");
         assertEq(hook.movingAverageGasPriceCount(), 2, "Count should be 2");
     }
 
@@ -36,19 +32,11 @@ contract GasPriceFeesHook_afterSwap is Base_Test {
         // Act and Assert: same sequence as the lesson
         swapAt(10 gwei);
         swapAt(4 gwei);
-        assertEq(
-            hook.movingAverageGasPrice(),
-            8 gwei,
-            "Average should be (10 + 10 + 4) / 3 = 8 gwei"
-        );
+        assertEq(hook.movingAverageGasPrice(), 8 gwei, "Average should be (10 + 10 + 4) / 3 = 8 gwei");
         assertEq(hook.movingAverageGasPriceCount(), 3, "Count should be 3");
 
         swapAt(12 gwei);
-        assertEq(
-            hook.movingAverageGasPrice(),
-            9 gwei,
-            "Average should be (10 + 10 + 4 + 12) / 4 = 9 gwei"
-        );
+        assertEq(hook.movingAverageGasPrice(), 9 gwei, "Average should be (10 + 10 + 4 + 12) / 4 = 9 gwei");
         assertEq(hook.movingAverageGasPriceCount(), 4, "Count should be 4");
     }
 
@@ -59,9 +47,7 @@ contract GasPriceFeesHook_afterSwap is Base_Test {
             address(this),
             key,
             SwapParams({
-                zeroForOne: true,
-                amountSpecified: -int256(SWAP_AMOUNT),
-                sqrtPriceLimitX96: TickMath.MIN_SQRT_PRICE + 1
+                zeroForOne: true, amountSpecified: -int256(SWAP_AMOUNT), sqrtPriceLimitX96: TickMath.MIN_SQRT_PRICE + 1
             }),
             BalanceDelta.wrap(0),
             ZERO_BYTES

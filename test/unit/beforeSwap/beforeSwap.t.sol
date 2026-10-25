@@ -26,9 +26,7 @@ contract GasPriceFeesHook_beforeSwap is Base_Test {
         assertEq(fee, hook.BASE_FEE(), "Fee should be the base fee");
     }
 
-    function test_beforeSwap_ChargesHalfFeeWhen_GasPriceAboveTenPercent()
-        public
-    {
+    function test_beforeSwap_ChargesHalfFeeWhen_GasPriceAboveTenPercent() public {
         // Act
         uint24 fee = feeAt(11 gwei + 1);
 
@@ -36,9 +34,7 @@ contract GasPriceFeesHook_beforeSwap is Base_Test {
         assertEq(fee, hook.BASE_FEE() / 2, "Fee should be halved");
     }
 
-    function test_beforeSwap_ChargesDoubleFeeWhen_GasPriceBelowTenPercent()
-        public
-    {
+    function test_beforeSwap_ChargesDoubleFeeWhen_GasPriceBelowTenPercent() public {
         // Act
         uint24 fee = feeAt(9 gwei - 1);
 
@@ -46,9 +42,7 @@ contract GasPriceFeesHook_beforeSwap is Base_Test {
         assertEq(fee, hook.BASE_FEE() * 2, "Fee should be doubled");
     }
 
-    function test_beforeSwap_ChargesBaseFeeWhen_GasPriceExactlyTenPercentAbove()
-        public
-    {
+    function test_beforeSwap_ChargesBaseFeeWhen_GasPriceExactlyTenPercentAbove() public {
         // Act
         uint24 fee = feeAt(11 gwei);
 
@@ -56,9 +50,7 @@ contract GasPriceFeesHook_beforeSwap is Base_Test {
         assertEq(fee, hook.BASE_FEE(), "Fee should be the base fee");
     }
 
-    function test_beforeSwap_ChargesBaseFeeWhen_GasPriceExactlyTenPercentBelow()
-        public
-    {
+    function test_beforeSwap_ChargesBaseFeeWhen_GasPriceExactlyTenPercentBelow() public {
         // Act
         uint24 fee = feeAt(9 gwei);
 
@@ -73,16 +65,8 @@ contract GasPriceFeesHook_beforeSwap is Base_Test {
         uint256 decreasedFeeOutput = swapAt(12 gwei);
 
         // Assert
-        assertGt(
-            decreasedFeeOutput,
-            baseFeeOutput,
-            "High gas swap should get more than the base fee swap"
-        );
-        assertGt(
-            baseFeeOutput,
-            increasedFeeOutput,
-            "Base fee swap should get more than the low gas swap"
-        );
+        assertGt(decreasedFeeOutput, baseFeeOutput, "High gas swap should get more than the base fee swap");
+        assertGt(baseFeeOutput, increasedFeeOutput, "Base fee swap should get more than the low gas swap");
     }
 
     function test_beforeSwap_RevertsWhen_CallerIsNotPoolManager() public {
@@ -92,9 +76,7 @@ contract GasPriceFeesHook_beforeSwap is Base_Test {
             address(this),
             key,
             SwapParams({
-                zeroForOne: true,
-                amountSpecified: -int256(SWAP_AMOUNT),
-                sqrtPriceLimitX96: TickMath.MIN_SQRT_PRICE + 1
+                zeroForOne: true, amountSpecified: -int256(SWAP_AMOUNT), sqrtPriceLimitX96: TickMath.MIN_SQRT_PRICE + 1
             }),
             ZERO_BYTES
         );

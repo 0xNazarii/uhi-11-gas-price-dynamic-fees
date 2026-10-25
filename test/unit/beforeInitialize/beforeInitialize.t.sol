@@ -28,19 +28,13 @@ contract GasPriceFeesHook_beforeInitialize is Base_Test {
 
     function test_beforeInitialize_AllowsDynamicFeePool() public {
         // Arrange
-        PoolKey memory newKey = PoolKey(
-            currency0,
-            currency1,
-            LPFeeLibrary.DYNAMIC_FEE_FLAG,
-            10,
-            hook
-        );
+        PoolKey memory newKey = PoolKey(currency0, currency1, LPFeeLibrary.DYNAMIC_FEE_FLAG, 10, hook);
 
         // Act
         manager.initialize(newKey, SQRT_PRICE_1_1);
 
         // Assert
-        (uint160 sqrtPriceX96, , , ) = manager.getSlot0(newKey.toId());
+        (uint160 sqrtPriceX96,,,) = manager.getSlot0(newKey.toId());
         assertEq(sqrtPriceX96, SQRT_PRICE_1_1, "Pool should be initialized");
     }
 
@@ -54,18 +48,14 @@ contract GasPriceFeesHook_beforeInitialize is Base_Test {
                 CustomRevert.WrappedError.selector,
                 address(hook),
                 IHooks.beforeInitialize.selector,
-                abi.encodeWithSelector(
-                    GasPriceFeesHook.MustUseDynamicFee.selector
-                ),
+                abi.encodeWithSelector(GasPriceFeesHook.MustUseDynamicFee.selector),
                 abi.encodeWithSelector(Hooks.HookCallFailed.selector)
             )
         );
         manager.initialize(newKey, SQRT_PRICE_1_1);
     }
 
-    function test_beforeInitialize_RevertsWhen_CallerIsNotPoolManager()
-        public
-    {
+    function test_beforeInitialize_RevertsWhen_CallerIsNotPoolManager() public {
         // Act and Assert
         vm.expectRevert(ImmutableState.NotPoolManager.selector);
         hook.beforeInitialize(address(this), key, SQRT_PRICE_1_1);

@@ -47,35 +47,18 @@ abstract contract Base_Test is Test, Deployers {
         deployMintAndApprove2Currencies();
 
         // Deploy the hook at 10 gwei to an address with its permission flags set
-        address flags = address(
-            uint160(
-                Hooks.BEFORE_INITIALIZE_FLAG |
-                    Hooks.BEFORE_SWAP_FLAG |
-                    Hooks.AFTER_SWAP_FLAG
-            )
-        );
+        address flags = address(uint160(Hooks.BEFORE_INITIALIZE_FLAG | Hooks.BEFORE_SWAP_FLAG | Hooks.AFTER_SWAP_FLAG));
         vm.txGasPrice(INITIAL_GAS_PRICE);
         deployCodeTo("GasPriceFeesHook.sol", abi.encode(manager), flags);
         hook = GasPriceFeesHook(flags);
 
         // Initialize a dynamic fee pool through the PoolManager
-        (key, ) = initPool(
-            currency0,
-            currency1,
-            hook,
-            LPFeeLibrary.DYNAMIC_FEE_FLAG,
-            SQRT_PRICE_1_1
-        );
+        (key,) = initPool(currency0, currency1, hook, LPFeeLibrary.DYNAMIC_FEE_FLAG, SQRT_PRICE_1_1);
 
         // Add liquidity in [-60, 60] around price 1
         modifyLiquidityRouter.modifyLiquidity(
             key,
-            ModifyLiquidityParams({
-                tickLower: -60,
-                tickUpper: 60,
-                liquidityDelta: 100 ether,
-                salt: bytes32(0)
-            }),
+            ModifyLiquidityParams({tickLower: -60, tickUpper: 60, liquidityDelta: 100 ether, salt: bytes32(0)}),
             ZERO_BYTES
         );
 
@@ -94,14 +77,9 @@ abstract contract Base_Test is Test, Deployers {
         swapRouter.swap(
             key,
             SwapParams({
-                zeroForOne: true,
-                amountSpecified: -int256(SWAP_AMOUNT),
-                sqrtPriceLimitX96: TickMath.MIN_SQRT_PRICE + 1
+                zeroForOne: true, amountSpecified: -int256(SWAP_AMOUNT), sqrtPriceLimitX96: TickMath.MIN_SQRT_PRICE + 1
             }),
-            PoolSwapTest.TestSettings({
-                takeClaims: false,
-                settleUsingBurn: false
-            }),
+            PoolSwapTest.TestSettings({takeClaims: false, settleUsingBurn: false}),
             ZERO_BYTES
         );
         output = currency1.balanceOfSelf() - balanceBefore;
@@ -111,20 +89,15 @@ abstract contract Base_Test is Test, Deployers {
     function feeAt(uint256 gasPrice) internal returns (uint24) {
         vm.txGasPrice(gasPrice);
         vm.prank(address(manager));
-        (, , uint24 feeWithFlag) = hook.beforeSwap(
+        (,, uint24 feeWithFlag) = hook.beforeSwap(
             address(swapRouter),
             key,
             SwapParams({
-                zeroForOne: true,
-                amountSpecified: -int256(SWAP_AMOUNT),
-                sqrtPriceLimitX96: TickMath.MIN_SQRT_PRICE + 1
+                zeroForOne: true, amountSpecified: -int256(SWAP_AMOUNT), sqrtPriceLimitX96: TickMath.MIN_SQRT_PRICE + 1
             }),
             ZERO_BYTES
         );
-        assertTrue(
-            feeWithFlag & LPFeeLibrary.OVERRIDE_FEE_FLAG != 0,
-            "Fee should carry the override flag"
-        );
+        assertTrue(feeWithFlag & LPFeeLibrary.OVERRIDE_FEE_FLAG != 0, "Fee should carry the override flag");
         return feeWithFlag & ~LPFeeLibrary.OVERRIDE_FEE_FLAG;
     }
 }

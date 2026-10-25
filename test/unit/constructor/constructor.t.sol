@@ -9,20 +9,9 @@ contract GasPriceFeesHook_constructor is Base_Test {
                                  TESTS
     //////////////////////////////////////////////////////////////*/
 
-    function test_constructor_SeedsMovingAverageWithDeployGasPrice()
-        public
-        view
-    {
+    function test_constructor_SeedsMovingAverageWithDeployGasPrice() public view {
         // Assert
-        assertEq(
-            hook.movingAverageGasPrice(),
-            INITIAL_GAS_PRICE,
-            "Average should be the deploy gas price"
-        );
-        assertEq(
-            hook.movingAverageGasPriceCount(),
-            1,
-            "Deploy should count as one sample"
-        );
+        assertEq(hook.movingAverageGasPrice(), INITIAL_GAS_PRICE, "Average should be the deploy gas price");
+        assertEq(hook.movingAverageGasPriceCount(), 1, "Deploy should count as one sample");
     }
 }
