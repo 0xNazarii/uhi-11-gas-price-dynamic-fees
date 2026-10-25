@@ -17,7 +17,13 @@ jobs:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
-          submodules: recursive
+
+      # v4-hooks-public nests 17 repos; only v4-core and v4-periphery are needed
+      - name: Install dependencies
+        run: |
+          git submodule update --init lib/forge-std lib/v4-hooks-public
+          git -C lib/v4-hooks-public submodule update --init --depth 1 lib/v4-periphery
+          git -C lib/v4-hooks-public submodule update --init --recursive --depth 1 lib/v4-core
 
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
